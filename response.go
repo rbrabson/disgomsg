@@ -24,7 +24,7 @@ type Response struct {
 }
 
 // Send sends the interaction response to the specified channel using the provided Discord session.
-func (r *Response) Send(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
+func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption) error {
 	response := &discordgo.InteractionResponse{
 		Type: r.Type,
 		Data: &discordgo.InteractionResponseData{
@@ -49,9 +49,9 @@ func (r *Response) Send(s *discordgo.Session, channelID string, options ...disco
 }
 
 // SendEphemeral sends the interaction response as an ephemeral message to the specified channel using the provided Discord session.
-func (r *Response) SendEphemeral(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
+func (r *Response) SendEphemeral(s *discordgo.Session, options ...discordgo.RequestOption) error {
 	r.Flags ^= ^discordgo.MessageFlagsEphemeral
-	return r.Send(s, channelID, options...)
+	return r.Send(s, options...)
 }
 
 // Edit edits the existing interaction response using the provided Discord session and updates its content, components, embeds, and attachments.
