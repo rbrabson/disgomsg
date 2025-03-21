@@ -51,7 +51,7 @@ func (m *Message) SendEphemeral(s *discordgo.Session, channelID string, options 
 }
 
 // Edit edits the existing message using the provided Discord session and updates its content, components, embeds, and flags.
-func (m *Message) Edit(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (m *Message) Edit(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
 	message := &discordgo.MessageEdit{
 		ID:         m.MessageID,
 		Channel:    m.ChannelID,
@@ -69,7 +69,7 @@ func (m *Message) Edit(s *discordgo.Session, options ...discordgo.RequestOption)
 }
 
 // Delete deletes the message using the provided Discord session and clears the MessageID to indicate it has been deleted.
-func (m *Message) Delete(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (m *Message) Delete(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
 	if m.MessageID == "" {
 		return nil // No message to delete
 	}

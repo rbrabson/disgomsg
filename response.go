@@ -24,7 +24,7 @@ type Response struct {
 }
 
 // Send sends the interaction response to the specified channel using the provided Discord session.
-func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
 	response := &discordgo.InteractionResponse{
 		Type: r.Type,
 		Data: &discordgo.InteractionResponseData{
@@ -40,7 +40,7 @@ func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption
 			Title:           r.Title,
 		},
 	}
-	err := s.InteractionRespond(r.Interaction, response, options...)
+	err := s.InteractionRespond(i, response, options...)
 	if err != nil {
 		return err
 	}
@@ -49,13 +49,13 @@ func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption
 }
 
 // SendEphemeral sends the interaction response as an ephemeral message to the specified channel using the provided Discord session.
-func (r *Response) SendEphemeral(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (r *Response) SendEphemeral(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
 	r.Flags ^= ^discordgo.MessageFlagsEphemeral
-	return r.Send(s, options...)
+	return r.Send(s, i, options...)
 }
 
 // Edit edits the existing interaction response using the provided Discord session and updates its content, components, embeds, and attachments.
-func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (r *Response) Edit(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
 	webhookEdit := &discordgo.WebhookEdit{
 		Content:         &r.Content,
 		Components:      &r.Components,
@@ -63,7 +63,7 @@ func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption
 		Attachments:     &r.Attachments,
 		AllowedMentions: r.AllowedMentions,
 	}
-	_, err := s.InteractionResponseEdit(r.Interaction, webhookEdit, options...)
+	_, err := s.InteractionResponseEdit(i, webhookEdit, options...)
 	if err != nil {
 		return err
 	}
@@ -72,8 +72,8 @@ func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption
 }
 
 // Delete deletes the interaction response using the provided Discord session.
-func (r *Response) Delete(s *discordgo.Session, options ...discordgo.RequestOption) error {
-	err := s.InteractionResponseDelete(r.Interaction, options...)
+func (r *Response) Delete(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
+	err := s.InteractionResponseDelete(i, options...)
 	if err != nil {
 		return err
 	}
