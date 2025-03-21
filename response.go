@@ -4,25 +4,23 @@ import (
 	"errors"
 
 	"github.com/bwmarrin/discordgo"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Response is a Discord interaction response representation used for sending and editing responses to interactions.
 type Response struct {
-	ID              primitive.ObjectID                          `json:"_id,omitempty" bson:"_id,omitempty"`
-	Interaction     *discordgo.Interaction                      `json:"interaction" bson:"interaction"`
-	Type            discordgo.InteractionResponseType           `json:"type,omitempty" bson:"type,omitempty"`
-	AllowedMentions *discordgo.MessageAllowedMentions           `json:"allowed_mentions,omitempty" bson:"allowed_mentions,omitempty"`
-	Attachments     []*discordgo.MessageAttachment              `json:"attachments,omitempty" bson:"attachments,omitempty"`
-	Components      []discordgo.MessageComponent                `json:"components" bson:"components,omitempty"`
-	Content         string                                      `json:"content" bson:"content,omitempty"`
-	Embeds          []*discordgo.MessageEmbed                   `json:"embeds" bson:"embeds,omitempty"`
-	Files           []*discordgo.File                           `json:"-" bson:"-"`
-	TTS             bool                                        `json:"tts" bson:"tts"`
-	Choices         []*discordgo.ApplicationCommandOptionChoice `json:"choices,omitempty" bson:"choices,omitempty"`     // Autocomplete interaction only.
-	Flags           discordgo.MessageFlags                      `json:"flags,omitempty"`                                // Only MessageFlagsSuppressEmbeds and MessageFlagsEphemeral are valid.
-	CustomID        string                                      `json:"custom_id,omitempty" bson:"custom_id,omitempty"` // Modal interaction only.
-	Title           string                                      `json:"title,omitempty" bson:"title,omitempty"`         // Modal interaction only.
+	interaction     *discordgo.Interaction
+	Type            discordgo.InteractionResponseType
+	AllowedMentions *discordgo.MessageAllowedMentions
+	Attachments     []*discordgo.MessageAttachment
+	Components      []discordgo.MessageComponent
+	Content         string
+	Embeds          []*discordgo.MessageEmbed
+	Files           []*discordgo.File
+	TTS             bool
+	Choices         []*discordgo.ApplicationCommandOptionChoice // Autocomplete interaction only.
+	Flags           discordgo.MessageFlags                      // Only MessageFlagsSuppressEmbeds and MessageFlagsEphemeral are valid.
+	CustomID        string                                      // Modal interaction only.
+	Title           string                                      // Modal interaction only.
 }
 
 // Send sends the interaction response to the specified channel using the provided Discord session.
@@ -46,7 +44,7 @@ func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options 
 	if err != nil {
 		return err
 	}
-	r.Interaction = i // Store the interaction for future reference
+	r.interaction = i // Store the interaction for future reference
 
 	return nil
 }
@@ -59,7 +57,7 @@ func (r *Response) SendEphemeral(s *discordgo.Session, i *discordgo.Interaction,
 
 // Edit edits the existing interaction response using the provided Discord session and updates its content, components, embeds, and attachments.
 func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption) error {
-	if r.Interaction == nil {
+	if r.interaction == nil {
 		return errors.New("missing interaction") // No interaction to delete
 	}
 
@@ -70,7 +68,7 @@ func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption
 		Attachments:     &r.Attachments,
 		AllowedMentions: r.AllowedMentions,
 	}
-	_, err := s.InteractionResponseEdit(r.Interaction, webhookEdit, options...)
+	_, err := s.InteractionResponseEdit(r.interaction, webhookEdit, options...)
 	if err != nil {
 		return err
 	}
@@ -80,13 +78,19 @@ func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption
 
 // Delete deletes the interaction response using the provided Discord session.
 func (r *Response) Delete(s *discordgo.Session, options ...discordgo.RequestOption) error {
-	if r.Interaction == nil {
+	if r.interaction == nil {
 		return errors.New("missing interaction") // No interaction to delete
 	}
-	err := s.InteractionResponseDelete(r.Interaction, options...)
+	err := s.InteractionResponseDelete(r.interaction, options...)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// WithInteraction sets the interaction that corresponds to the response to be edited or deleted.
+func (r *Response) WithInteraction(i *discordgo.Interaction) *Response {
+	r.interaction = i
+	return r
 }
