@@ -46,7 +46,7 @@ func (m *Message) Send(s *discordgo.Session, channelID string, options ...discor
 
 // SendEphemeral sends the message as an ephemeral message to the specified channel using the provided Discord session.
 func (m *Message) SendEphemeral(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
-	m.Flags ^= ^discordgo.MessageFlagsEphemeral
+	m.Flags ^= discordgo.MessageFlagsEphemeral
 	return m.Send(s, channelID, options...)
 }
 
