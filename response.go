@@ -9,7 +9,7 @@ import (
 // Response is a Discord interaction response representation used for sending and editing responses to interactions.
 type Response struct {
 	interaction     *discordgo.Interaction
-	Type            discordgo.InteractionResponseType
+	responseType    *discordgo.InteractionResponseType
 	AllowedMentions *discordgo.MessageAllowedMentions
 	Attachments     []*discordgo.MessageAttachment
 	Components      []discordgo.MessageComponent
@@ -25,8 +25,14 @@ type Response struct {
 
 // Send sends the interaction response to the specified channel using the provided Discord session.
 func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
+	var respType discordgo.InteractionResponseType
+	if r.responseType == nil {
+		respType = discordgo.InteractionResponseChannelMessageWithSource
+	} else {
+		respType = *r.responseType
+	}
 	response := &discordgo.InteractionResponse{
-		Type: r.Type,
+		Type: respType,
 		Data: &discordgo.InteractionResponseData{
 			AllowedMentions: r.AllowedMentions,
 			Attachments:     &r.Attachments,
@@ -92,5 +98,12 @@ func (r *Response) Delete(s *discordgo.Session, options ...discordgo.RequestOpti
 // WithInteraction sets the interaction that corresponds to the response to be edited or deleted.
 func (r *Response) WithInteraction(i *discordgo.Interaction) *Response {
 	r.interaction = i
+	return r
+}
+
+// WithResponseType sets the response type for the interaction response. If not set, the resposne
+// defaults to `discordgo.InteractionResponseChannelMessageWithSource`.
+func (r *Response) WithResponseType(responseType discordgo.InteractionResponseType) *Response {
+	r.responseType = &responseType
 	return r
 }
