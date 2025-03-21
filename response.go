@@ -1,6 +1,8 @@
 package disgomsg
 
 import (
+	"errors"
+
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -44,6 +46,7 @@ func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options 
 	if err != nil {
 		return err
 	}
+	r.Interaction = i // Store the interaction for future reference
 
 	return nil
 }
@@ -55,7 +58,11 @@ func (r *Response) SendEphemeral(s *discordgo.Session, i *discordgo.Interaction,
 }
 
 // Edit edits the existing interaction response using the provided Discord session and updates its content, components, embeds, and attachments.
-func (r *Response) Edit(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
+func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption) error {
+	if r.Interaction == nil {
+		return errors.New("missing interaction") // No interaction to delete
+	}
+
 	webhookEdit := &discordgo.WebhookEdit{
 		Content:         &r.Content,
 		Components:      &r.Components,
@@ -63,7 +70,7 @@ func (r *Response) Edit(s *discordgo.Session, i *discordgo.Interaction, options 
 		Attachments:     &r.Attachments,
 		AllowedMentions: r.AllowedMentions,
 	}
-	_, err := s.InteractionResponseEdit(i, webhookEdit, options...)
+	_, err := s.InteractionResponseEdit(r.Interaction, webhookEdit, options...)
 	if err != nil {
 		return err
 	}
@@ -72,8 +79,11 @@ func (r *Response) Edit(s *discordgo.Session, i *discordgo.Interaction, options 
 }
 
 // Delete deletes the interaction response using the provided Discord session.
-func (r *Response) Delete(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
-	err := s.InteractionResponseDelete(i, options...)
+func (r *Response) Delete(s *discordgo.Session, options ...discordgo.RequestOption) error {
+	if r.Interaction == nil {
+		return errors.New("missing interaction") // No interaction to delete
+	}
+	err := s.InteractionResponseDelete(r.Interaction, options...)
 	if err != nil {
 		return err
 	}

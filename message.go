@@ -1,6 +1,8 @@
 package disgomsg
 
 import (
+	"errors"
+
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -51,7 +53,13 @@ func (m *Message) SendEphemeral(s *discordgo.Session, channelID string, options 
 }
 
 // Edit edits the existing message using the provided Discord session and updates its content, components, embeds, and flags.
-func (m *Message) Edit(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
+func (m *Message) Edit(s *discordgo.Session, options ...discordgo.RequestOption) error {
+	if m.ChannelID == "" {
+		return errors.New("missing channelID") // No message to edit
+	}
+	if m.MessageID == "" {
+		return errors.New("missing messageID") // No message to edit
+	}
 	message := &discordgo.MessageEdit{
 		ID:         m.MessageID,
 		Channel:    m.ChannelID,
@@ -69,9 +77,12 @@ func (m *Message) Edit(s *discordgo.Session, channelID string, options ...discor
 }
 
 // Delete deletes the message using the provided Discord session and clears the MessageID to indicate it has been deleted.
-func (m *Message) Delete(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
+func (m *Message) Delete(s *discordgo.Session, options ...discordgo.RequestOption) error {
+	if m.ChannelID == "" {
+		return errors.New("missing channelID") // No message to edit
+	}
 	if m.MessageID == "" {
-		return nil // No message to delete
+		return errors.New("missing messageID") // No message to edit
 	}
 	err := s.ChannelMessageDelete(m.ChannelID, m.MessageID, options...)
 	if err != nil {
