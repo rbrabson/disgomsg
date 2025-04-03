@@ -7,20 +7,12 @@ import (
 )
 
 // Response is a Discord interaction response representation used for sending and editing responses to interactions.
-type Response struct {
-	interaction     *discordgo.Interaction
-	responseType    *discordgo.InteractionResponseType
-	AllowedMentions *discordgo.MessageAllowedMentions
-	Attachments     []*discordgo.MessageAttachment
-	Components      []discordgo.MessageComponent
-	Content         string
-	Embeds          []*discordgo.MessageEmbed
-	Files           []*discordgo.File
-	TTS             bool
-	Choices         []*discordgo.ApplicationCommandOptionChoice // Autocomplete interaction only.
-	Flags           discordgo.MessageFlags                      // Only MessageFlagsSuppressEmbeds and MessageFlagsEphemeral are valid.
-	CustomID        string                                      // Modal interaction only.
-	Title           string                                      // Modal interaction only.
+type Response message
+
+// NewResponse creates a new message instance with the provided options that may be sent as a response to an interaction.
+func NewResponse(opts ...Option) *Response {
+	message := newMessage(opts...)
+	return (*Response)(message)
 }
 
 // Send sends the interaction response to the specified channel using the provided Discord session.
@@ -34,30 +26,30 @@ func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options 
 	response := &discordgo.InteractionResponse{
 		Type: respType,
 		Data: &discordgo.InteractionResponseData{
-			AllowedMentions: r.AllowedMentions,
-			Attachments:     &r.Attachments,
-			Components:      r.Components,
-			Content:         r.Content,
-			Embeds:          r.Embeds,
-			Files:           r.Files,
-			Flags:           r.Flags,
-			Choices:         r.Choices,
-			CustomID:        r.CustomID,
-			Title:           r.Title,
+			AllowedMentions: r.allowedMentions,
+			Attachments:     &r.attachments,
+			Components:      r.components,
+			Content:         r.content,
+			Embeds:          r.embeds,
+			Files:           r.files,
+			Flags:           r.flags,
+			Choices:         r.choices,
+			CustomID:        r.customID,
+			Title:           r.title,
 		},
 	}
 	err := s.InteractionRespond(i, response, options...)
 	if err != nil {
 		return err
 	}
-	r.interaction = i // Store the interaction for future reference
+	r.interaction = i
 
 	return nil
 }
 
 // SendEphemeral sends the interaction response as an ephemeral message to the specified channel using the provided Discord session.
 func (r *Response) SendEphemeral(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
-	r.Flags ^= discordgo.MessageFlagsEphemeral
+	r.flags ^= discordgo.MessageFlagsEphemeral
 	return r.Send(s, i, options...)
 }
 
@@ -68,11 +60,11 @@ func (r *Response) Edit(s *discordgo.Session, options ...discordgo.RequestOption
 	}
 
 	webhookEdit := &discordgo.WebhookEdit{
-		Content:         &r.Content,
-		Components:      &r.Components,
-		Embeds:          &r.Embeds,
-		Attachments:     &r.Attachments,
-		AllowedMentions: r.AllowedMentions,
+		Content:         &r.content,
+		Components:      &r.components,
+		Embeds:          &r.embeds,
+		Attachments:     &r.attachments,
+		AllowedMentions: r.allowedMentions,
 	}
 	_, err := s.InteractionResponseEdit(r.interaction, webhookEdit, options...)
 	if err != nil {
@@ -93,17 +85,4 @@ func (r *Response) Delete(s *discordgo.Session, options ...discordgo.RequestOpti
 	}
 
 	return nil
-}
-
-// WithInteraction sets the interaction that corresponds to the response to be edited or deleted.
-func (r *Response) WithInteraction(i *discordgo.Interaction) *Response {
-	r.interaction = i
-	return r
-}
-
-// WithResponseType sets the response type for the interaction response. If not set, the resposne
-// defaults to `discordgo.InteractionResponseChannelMessageWithSource`.
-func (r *Response) WithResponseType(responseType discordgo.InteractionResponseType) *Response {
-	r.responseType = &responseType
-	return r
 }
