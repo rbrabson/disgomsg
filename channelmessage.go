@@ -13,12 +13,6 @@ func NewMessage(opts ...Option) *Message {
 	return (*Message)(message)
 }
 
-// SetOptions sets the options for the message.
-func (m *Message) SetOptions(opts ...Option) {
-	message := (*message)(m)
-	message.setOptions(opts...)
-}
-
 // Send s the message to the specified channel using the provided Discord session.
 func (m *Message) Send(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
 	message := &discordgo.MessageSend{
@@ -85,5 +79,11 @@ func (m *Message) Delete(s *discordgo.Session, options ...discordgo.RequestOptio
 // WithChannelID sets the channel ID for the message.
 func (m *Message) WithChannelID(channelID string) *Message {
 	m.channelID = channelID
+	return m
+}
+
+// WithMessageID sets the message ID for the message.
+func (m *Message) WithMessageID(messageID string) *Message {
+	m.messageID = messageID
 	return m
 }

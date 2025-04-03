@@ -14,12 +14,6 @@ func NewDirectMessage(opts ...Option) *DirectMessage {
 	return (*DirectMessage)(message)
 }
 
-// SetOptions sets the options for the message.
-func (dm *DirectMessage) SetOptions(opts ...Option) {
-	message := (*message)(dm)
-	message.setOptions(opts...)
-}
-
 // Send sends a direct message to the specified member using the provided Discord session.
 func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...discordgo.RequestOption) error {
 	channel, err := s.UserChannelCreate(memberID)

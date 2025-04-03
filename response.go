@@ -15,12 +15,6 @@ func NewResponse(opts ...Option) *Response {
 	return (*Response)(message)
 }
 
-// SetOptions sets the options for the message.
-func (r *Response) SetOptions(opts ...Option) {
-	message := (*message)(r)
-	message.setOptions(opts...)
-}
-
 // Send sends the interaction response to the specified channel using the provided Discord session.
 func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
 	var respType discordgo.InteractionResponseType

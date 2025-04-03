@@ -26,15 +26,10 @@ type message struct {
 // newMessage creates a new message with the given options
 func newMessage(opts ...Option) *message {
 	m := &message{}
-	m.setOptions(opts...)
-	return m
-}
-
-// setOptions sets the options for the message
-func (m *message) setOptions(opts ...Option) {
 	for _, opt := range opts {
 		opt(m)
 	}
+	return m
 }
 
 // Option is a function that modifies a message.
