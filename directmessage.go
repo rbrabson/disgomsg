@@ -88,3 +88,21 @@ func (dm *DirectMessage) WithChannelID(channelID string) *DirectMessage {
 	dm.channelID = channelID
 	return dm
 }
+
+// WtthContent sets the content for the message.
+func (dm *DirectMessage) WithContent(content string) *DirectMessage {
+	dm.content = content
+	return dm
+}
+
+// WithEmbeds sets the embeds for the message.
+func (dm *DirectMessage) WithEmbeds(embeds []*discordgo.MessageEmbed) *DirectMessage {
+	dm.embeds = embeds
+	return dm
+}
+
+// WithComponents sets the components for the message.
+func (dm *DirectMessage) WithComponents(components []discordgo.MessageComponent) *DirectMessage {
+	dm.components = components
+	return dm
+}

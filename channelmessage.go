@@ -87,3 +87,21 @@ func (m *Message) WithMessageID(messageID string) *Message {
 	m.messageID = messageID
 	return m
 }
+
+// WtthContent sets the content for the message.
+func (dm *Message) WithContent(content string) *Message {
+	dm.content = content
+	return dm
+}
+
+// WithEmbeds sets the embeds for the message.
+func (dm *Message) WithEmbeds(embeds []*discordgo.MessageEmbed) *Message {
+	dm.embeds = embeds
+	return dm
+}
+
+// WithComponents sets the components for the message.
+func (dm *Message) WithComponents(components []discordgo.MessageComponent) *Message {
+	dm.components = components
+	return dm
+}

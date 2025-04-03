@@ -92,3 +92,21 @@ func (r *Response) WithInteraction(i *discordgo.Interaction) *Response {
 	r.interaction = i
 	return r
 }
+
+// WtthContent sets the content for the message.
+func (dm *Response) WithContent(content string) *Response {
+	dm.content = content
+	return dm
+}
+
+// WithEmbeds sets the embeds for the message.
+func (dm *Response) WithEmbeds(embeds []*discordgo.MessageEmbed) *Response {
+	dm.embeds = embeds
+	return dm
+}
+
+// WithComponents sets the components for the message.
+func (dm *Response) WithComponents(components []discordgo.MessageComponent) *Response {
+	dm.components = components
+	return dm
+}
