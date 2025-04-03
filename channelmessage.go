@@ -20,7 +20,7 @@ func (m *Message) SetOptions(opts ...Option) {
 }
 
 // Send s the message to the specified channel using the provided Discord session.
-func (m *Message) Send(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (m *Message) Send(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
 	message := &discordgo.MessageSend{
 		AllowedMentions: m.allowedMentions,
 		Components:      m.components,
@@ -32,6 +32,7 @@ func (m *Message) Send(s *discordgo.Session, options ...discordgo.RequestOption)
 		StickerIDs:      m.stickerIDs,
 		TTS:             m.tts,
 	}
+	m.channelID = channelID
 	sent, err := s.ChannelMessageSendComplex(m.channelID, message, options...)
 	if err != nil {
 		return err
@@ -79,4 +80,10 @@ func (m *Message) Delete(s *discordgo.Session, options ...discordgo.RequestOptio
 	}
 	m.messageID = "" // Clear the ID after deletion
 	return nil
+}
+
+// WithChannelID sets the channel ID for the message.
+func (m *Message) WithChannelID(channelID string) *Message {
+	m.channelID = channelID
+	return m
 }

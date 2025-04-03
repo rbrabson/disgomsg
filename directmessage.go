@@ -88,3 +88,9 @@ func (dm *DirectMessage) Delete(s *discordgo.Session, options ...discordgo.Reque
 	dm.messageID = "" // Clear the ID after deletion
 	return nil
 }
+
+// WithChannelID sets the channel ID for the message.
+func (dm *DirectMessage) WithChannelID(channelID string) *DirectMessage {
+	dm.channelID = channelID
+	return dm
+}

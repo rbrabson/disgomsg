@@ -22,7 +22,7 @@ func (r *Response) SetOptions(opts ...Option) {
 }
 
 // Send sends the interaction response to the specified channel using the provided Discord session.
-func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (r *Response) Send(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
 	var respType discordgo.InteractionResponseType
 	if r.responseType == nil {
 		respType = discordgo.InteractionResponseChannelMessageWithSource
@@ -44,6 +44,7 @@ func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption
 			Title:           r.title,
 		},
 	}
+	r.interaction = i
 	err := s.InteractionRespond(r.interaction, response, options...)
 	if err != nil {
 		return err
@@ -53,9 +54,9 @@ func (r *Response) Send(s *discordgo.Session, options ...discordgo.RequestOption
 }
 
 // SendEphemeral sends the interaction response as an ephemeral message to the specified channel using the provided Discord session.
-func (r *Response) SendEphemeral(s *discordgo.Session, options ...discordgo.RequestOption) error {
+func (r *Response) SendEphemeral(s *discordgo.Session, i *discordgo.Interaction, options ...discordgo.RequestOption) error {
 	r.flags ^= discordgo.MessageFlagsEphemeral
-	return r.Send(s, options...)
+	return r.Send(s, i, options...)
 }
 
 // Edit edits the existing interaction response using the provided Discord session and updates its content, components, embeds, and attachments.
@@ -90,4 +91,10 @@ func (r *Response) Delete(s *discordgo.Session, options ...discordgo.RequestOpti
 	}
 
 	return nil
+}
+
+// WithInteraction sets the interaction for the response.
+func (r *Response) WithInteraction(i *discordgo.Interaction) *Response {
+	r.interaction = i
+	return r
 }
