@@ -13,6 +13,12 @@ func NewMessage(opts ...Option) *Message {
 	return (*Message)(message)
 }
 
+// SetOptions sets the options for the message.
+func (m *Message) SetOptions(opts ...Option) {
+	message := (*message)(m)
+	message.setOptions(opts...)
+}
+
 // Send s the message to the specified channel using the provided Discord session.
 func (m *Message) Send(s *discordgo.Session, options ...discordgo.RequestOption) error {
 	message := &discordgo.MessageSend{
