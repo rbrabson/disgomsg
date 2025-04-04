@@ -15,10 +15,10 @@ func NewDirectMessage(opts ...Option) *DirectMessage {
 }
 
 // Send sends a direct message to the specified member using the provided Discord session.
-func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...discordgo.RequestOption) error {
+func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...discordgo.RequestOption) (channelID string, messagID string, err error) {
 	channel, err := s.UserChannelCreate(memberID)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 
 	message := &discordgo.MessageSend{
@@ -35,12 +35,12 @@ func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...
 
 	sent, err := s.ChannelMessageSendComplex(channel.ID, message, options...)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 	dm.messageID = sent.ID
 	dm.channelID = channel.ID
 
-	return nil
+	return channel.ID, sent.ID, nil
 }
 
 // Edit edits the existing message using the provided Discord session and updates its content, components, embeds, and flags.

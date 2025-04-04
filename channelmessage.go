@@ -14,7 +14,7 @@ func NewMessage(opts ...Option) *Message {
 }
 
 // Send s the message to the specified channel using the provided Discord session.
-func (m *Message) Send(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) error {
+func (m *Message) Send(s *discordgo.Session, channelID string, options ...discordgo.RequestOption) (string, error) {
 	message := &discordgo.MessageSend{
 		AllowedMentions: m.allowedMentions,
 		Components:      m.components,
@@ -29,11 +29,11 @@ func (m *Message) Send(s *discordgo.Session, channelID string, options ...discor
 	m.channelID = channelID
 	sent, err := s.ChannelMessageSendComplex(m.channelID, message, options...)
 	if err != nil {
-		return err
+		return "", err
 	}
 	m.messageID = sent.ID
 
-	return nil
+	return sent.ID, nil
 }
 
 // Edit edits the existing message using the provided Discord session and updates its content, components, embeds, and flags.
