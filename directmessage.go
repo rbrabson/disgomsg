@@ -15,10 +15,10 @@ func NewDirectMessage(opts ...Option) *DirectMessage {
 }
 
 // Send sends a direct message to the specified member using the provided Discord session.
-func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...discordgo.RequestOption) (channelID string, messagID string, err error) {
+func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...discordgo.RequestOption) (messagID string, err error) {
 	channel, err := s.UserChannelCreate(memberID)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	message := &discordgo.MessageSend{
@@ -35,12 +35,12 @@ func (dm *DirectMessage) Send(s *discordgo.Session, memberID string, options ...
 
 	sent, err := s.ChannelMessageSendComplex(channel.ID, message, options...)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 	dm.messageID = sent.ID
 	dm.channelID = channel.ID
 
-	return channel.ID, sent.ID, nil
+	return dm.messageID, nil
 }
 
 // Edit edits the existing message using the provided Discord session and updates its content, components, embeds, and flags.
@@ -83,8 +83,18 @@ func (dm *DirectMessage) Delete(s *discordgo.Session, options ...discordgo.Reque
 	return nil
 }
 
-// WithChannelID sets the channel ID for the message.
-func (dm *DirectMessage) WithChannelID(channelID string) *DirectMessage {
+// WithMemberID uses the member ID to create a new channel to the member and sets the channel ID
+// for the message.
+func (dm *DirectMessage) WithMemberID(s *discordgo.Session, memberID string) *DirectMessage {
+	channel, err := s.UserChannelCreate(memberID)
+	if err == nil {
+		dm.channelID = channel.ID
+	}
+	return dm
+}
+
+// WithMessageID sets the message ID for the message.
+func (dm *DirectMessage) WithMessageID(channelID string) *DirectMessage {
 	dm.channelID = channelID
 	return dm
 }
