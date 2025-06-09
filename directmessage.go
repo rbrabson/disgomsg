@@ -99,7 +99,7 @@ func (dm *DirectMessage) WithMessageID(channelID string) *DirectMessage {
 	return dm
 }
 
-// WtthContent sets the content for the message.
+// WithContent sets the content for the message.
 func (dm *DirectMessage) WithContent(content string) *DirectMessage {
 	dm.content = content
 	return dm
